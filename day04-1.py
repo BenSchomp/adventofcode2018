@@ -52,26 +52,30 @@ for key in sorted(shifts.iterkeys()):
     for i in range(60):
       guard_totals[guard][i] += shift[i]
 
-max_asleep_mins = -1
-max_asleep_guard = None
+max_asleep_mins = -1 # the running max of number of total minutes a guard has slept
+max_asleep_guard = None # which guard slept for the above max_asleep_mins
 for guard, shift in guard_totals.items():
-  max_min = None
-  max_min_value = -1
+  max_min = None # the cur guard's max slept minutes
+  max_min_value = -1 # which minute is responsible for the above max_min
 
+  # total up all minutes asleep
   total_asleep = 0
   for i in range(60):
     total_asleep += shift[i]
 
+    # is this minute the new max slept minute?
     if shift[i] > max_min_value:
       max_min_value = shift[i]
       max_min = i
 
+  # if this guard is the new max, set everything accordingly
   if total_asleep > max_asleep_mins:
     max_asleep_mins = total_asleep
     max_asleep_guard = guard
     max_asleep_min = max_min
     max_asleep_min_value = max_min_value
 
+# output checksum
 print( "output: %d" % (max_asleep_guard * max_asleep_min) )
 
 
