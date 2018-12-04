@@ -1,6 +1,10 @@
 import numpy
 file = open('day03-input.txt', 'r')
 
+maxX = 1000
+maxY = 1000
+grid = numpy.zeros( (maxX,maxY) )
+
 lines = []
 for line in file:
   pieces = line.strip().split(' ')
@@ -8,23 +12,19 @@ for line in file:
   start = pieces[2][:-1].split(',')
   size = pieces[3].split('x')
 
-  lines.append( [ id, start, size ] )
-file.close()
+  data = [ id, int(start[0]), int(start[1]), int(size[0]), int(size[1]) ]
+  lines.append( data )
 
-maxX = 1000
-maxY = 1000
-grid = numpy.zeros( (maxX,maxY) )
-
-for line in lines:
-  x = int(line[1][0])
-  y = int(line[1][1])
-  w = int(line[2][0])
-  h = int(line[2][1])
+  x = data[1]
+  y = data[2]
+  w = data[3]
+  h = data[4]
 
   for i in range(x, x+w):
     for j in range(y, y+h):
       grid[j,i] += 1
 
+file.close()
 
 count = 0
 for i in range(maxX):
