@@ -1,3 +1,8 @@
+# day 2, part 1
+# for each input, count the number of repeated characters
+# keep a running count of how many inputs had exactly
+#  two repeated characters, and how many had exactly
+#  three repeated characters
 file = open('day02-input.txt', 'r')
 
 twos = 0
@@ -10,18 +15,21 @@ for line in file:
     else:
       d[i] = 1
 
-  found2 = False
-  found3 = False
+  found_two = False
+  found_three = False
   for key, value in d.items():
     if value == 2:
-      found2 = True
+      found_two = True
     elif value == 3:
-      found3 = True
+      found_three = True
 
-  if found2:
+  if found_two:
     twos += 1
-  if found3:
+  if found_three:
     threes += 1
 
-print( "checksum: (%d x %d) = %d" % (twos, threes, twos * threes) )
 file.close()
+
+# final output is the product of twos and threex
+print( "checksum: (%d x %d) = %d" % (twos, threes, twos * threes) )
+
