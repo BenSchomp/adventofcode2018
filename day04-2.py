@@ -1,6 +1,6 @@
-# day 4, part 1
+# day 4, part 2
 # parse guard sleep times
-# find guard most asleep, then which min he slept the most
+# find which min is most slept through
 
 file = open('day04-input.txt', 'r')
 
@@ -52,26 +52,19 @@ for key in sorted(shifts.iterkeys()):
     for i in range(60):
       guard_totals[guard][i] += shift[i]
 
-max_asleep_mins = -1
-max_asleep_guard = None
+# now find the minute with the most slept minutes across all guards
+
+max_min = None
+max_min_value = -1
+max_guard = None
 for guard, shift in guard_totals.items():
-  max_min = None
-  max_min_value = -1
 
-  total_asleep = 0
   for i in range(60):
-    total_asleep += shift[i]
-
     if shift[i] > max_min_value:
       max_min_value = shift[i]
       max_min = i
+      max_guard = guard
 
-  if total_asleep > max_asleep_mins:
-    max_asleep_mins = total_asleep
-    max_asleep_guard = guard
-    max_asleep_min = max_min
-    max_asleep_min_value = max_min_value
-
-print( "output: %d" % (max_asleep_guard * max_asleep_min) )
+print( "output: %d" % (max_guard * max_min) )
 
 
