@@ -1,6 +1,6 @@
 # day 4, part 2
 # parse guard sleep times
-# find which min is most slept through
+# find which minute is most slept through
 
 file = open('day04-input.txt', 'r')
 
@@ -10,7 +10,7 @@ for line in file:
   events[pieces[0][1:]] = pieces[1]
 file.close()
 
-# handle each event in sorted by date/time order
+# handle each event in sorted-by-date/time order
 
 shifts = dict()
 for key in sorted(events.iterkeys()):
@@ -29,16 +29,16 @@ for key in sorted(events.iterkeys()):
     if date not in shifts:
       shifts[date] = (guard, [0] * 60)
 
-    # since all events are processed sorted by date/time,
-    #   starting at event_min, mark every future min the new state
-    event_min = int( time.split(':')[1] )
-    for i in range(event_min, 60):
+    # since all events are processed sorted-by-date/time,
+    #   starting at event_minute, update every future minute with the new state
+    event_minute = int( time.split(':')[1] )
+    for i in range(event_minute, 60):
       if event.startswith( 'falls' ):
         shifts[date][1][i] = 1
       else: # startswith( 'wakes' )
         shifts[date][1][i] = 0
 
-# now group by guard, combining each min asleep into one totaled array
+# now group by guard, combining each minute asleep into one totaled array
 
 guard_totals = dict()
 for key in sorted(shifts.iterkeys()):
@@ -48,23 +48,22 @@ for key in sorted(shifts.iterkeys()):
     # init entry
     guard_totals[guard] = shift
   else:
-    # add each min to total
+    # add each minute to total
     for i in range(60):
       guard_totals[guard][i] += shift[i]
 
 # now find the minute with the most slept minutes across all guards
 
-max_min = None
-max_min_value = -1
+max_minute = None
+max_minute_value = -1
 max_guard = None
 for guard, shift in guard_totals.items():
-
   for i in range(60):
-    if shift[i] > max_min_value:
-      max_min_value = shift[i]
-      max_min = i
+    if shift[i] > max_minute_value:
+      max_minute_value = shift[i]
+      max_minute = i
       max_guard = guard
 
-print( "output: %d" % (max_guard * max_min) )
+print( "output: %d" % (max_guard * max_minute) )
 
 

@@ -1,6 +1,6 @@
 # day 4, part 1
 # parse guard sleep times
-# find guard most asleep, then which min he slept the most
+# find guard most asleep, then which minute he slept the most
 
 file = open('day04-input.txt', 'r')
 
@@ -10,7 +10,7 @@ for line in file:
   events[pieces[0][1:]] = pieces[1]
 file.close()
 
-# handle each event in sorted by date/time order
+# handle each event in sorted-by-date/time order
 
 shifts = dict()
 for key in sorted(events.iterkeys()):
@@ -29,16 +29,16 @@ for key in sorted(events.iterkeys()):
     if date not in shifts:
       shifts[date] = (guard, [0] * 60)
 
-    # since all events are processed sorted by date/time,
-    #   starting at event_min, mark every future min the new state
-    event_min = int( time.split(':')[1] )
-    for i in range(event_min, 60):
+    # since all events are processed sorted-by-date/time,
+    #   starting at event_minute, update every future minute with the new state
+    event_minute = int( time.split(':')[1] )
+    for i in range(event_minute, 60):
       if event.startswith( 'falls' ):
         shifts[date][1][i] = 1
       else: # startswith( 'wakes' )
         shifts[date][1][i] = 0
 
-# now group by guard, combining each min asleep into one totaled array
+# now group by guard, combining each minute asleep into one totaled array
 
 guard_totals = dict()
 for key in sorted(shifts.iterkeys()):
@@ -48,15 +48,15 @@ for key in sorted(shifts.iterkeys()):
     # init entry
     guard_totals[guard] = shift
   else:
-    # add each min to total
+    # add each minute to total
     for i in range(60):
       guard_totals[guard][i] += shift[i]
 
-max_asleep_mins = -1 # the running max of number of total minutes a guard has slept
-max_asleep_guard = None # which guard slept for the above max_asleep_mins
+max_asleep_minutes = -1 # the running max of number of total minutes a guard has slept
+max_asleep_guard = None # which guard slept for the above max_asleep_minutes
 for guard, shift in guard_totals.items():
-  max_min = None # the cur guard's max slept minutes
-  max_min_value = -1 # which minute is responsible for the above max_min
+  max_minute = None # the cur guard's max slept minutes
+  max_minute_value = -1 # which minute is responsible for the above max_minute
 
   # total up all minutes asleep
   total_asleep = 0
@@ -64,18 +64,18 @@ for guard, shift in guard_totals.items():
     total_asleep += shift[i]
 
     # is this minute the new max slept minute?
-    if shift[i] > max_min_value:
-      max_min_value = shift[i]
-      max_min = i
+    if shift[i] > max_minute_value:
+      max_minute_value = shift[i]
+      max_minute = i
 
   # if this guard is the new max, set everything accordingly
-  if total_asleep > max_asleep_mins:
-    max_asleep_mins = total_asleep
+  if total_asleep > max_asleep_minutes:
+    max_asleep_minutes = total_asleep
     max_asleep_guard = guard
-    max_asleep_min = max_min
-    max_asleep_min_value = max_min_value
+    max_asleep_minute = max_minute
+    max_asleep_minute_value = max_minute_value
 
 # output checksum
-print( "output: %d" % (max_asleep_guard * max_asleep_min) )
+print( "output: %d" % (max_asleep_guard * max_asleep_minute) )
 
 
