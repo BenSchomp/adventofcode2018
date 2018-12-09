@@ -1,100 +1,85 @@
 # day 6, part 1
-# 
 
-import numpy
+file = open('day06-input.txt', 'r')
 
-size = 10
-grid = numpy.zeros( (size,size) )
-infinite = set()
-xMin = size
-xMax = 0 
-yMin = size
-yMax = 0 
-
-
-file = open('day06-input.txtx', 'r')
+nodes = dict()
+xMin = xMax = yMin = yMax = None
 i = 0
 for line in file:
   i += 1
   coord = line.strip()
-  pieces = coord.split(',')
-  x = int(pieces[0])
-  y = int(pieces[1])
-  grid[x,y] = i * -1
+  (x, y) = coord.split(',')
+  x = int(x)
+  y = int(y)
+  p = ( x, y )
+  nodes[i] = p
 
-  if x < xMin:
+  if not xMin or x < xMin:
     xMin = x
-  if x > xMax:
+  if not xMax or x > xMax:
     xMax = x
-  if y < yMin:
+  if not yMin or y < yMin:
     yMin = y
-  if y > yMax:
+  if not yMax or y > yMax:
     yMax = y
+
 file.close()
-
-for x in range(xMin, xMax+1):
-  if grid[x,yMin] < 0:
-    infinite.add( grid[x,yMin] )
-  if grid[x,yMax] < 0:
-    infinite.add( grid[x,yMax] )
-
-for y in range(yMin, yMax+1):
-  if grid[xMin,y] < 0:
-    infinite.add( grid[xMin,y] )
-  if grid[xMax,y] < 0:
-    infinite.add( grid[xMax,y] )
-
-print( grid )
-print( xMin, xMax, yMin, yMax )
-print( infinite )
-print
 
 # try out all spaces 1 away first, then try all spaces 2 away
 # have to look at ALL the 2's though ... but as soon as you find a negative number, you're done
 # if you find more than 1, you can stop (its a 0)
 # if you find only 1, its positive the number
 
+grid = dict()
 for x in range(xMin, xMax+1):
   for y in range(yMin, yMax+1):
-    if grid[x,y] != 0:
+    done = False
+
+    distances = dict()
+    for key, n in nodes.items():
+      d = abs(x-n[0]) + abs(y-n[1])
+      if d == 0:
+        grid[(x,y)] = key
+        done = True
+        break
+      else:
+        distances[key] = d
+
+    if done:
       continue
 
-    delta = 0
-    found = 0
-    while not found:
-      delta += 1
+    tmp = sorted(distances.items(), key=lambda l: l[1])
+    if tmp[0][1] == tmp[1][1]:
+      grid[(x,y)] = 0
+      continue
 
-      for dx in range(-delta, delta+1):
-        for dy in range(-delta, delta+1):
-          curX = x + dx
-          curY = y + dy
+    grid[(x,y)] = tmp[0][0]  
 
-          if curX < 0 or curX >= size or curY < 0 or curY >= size:
-            continue
+infinite = set()
+#for key, n in nodes.items():
+#  if n[0] == xMin or n[0] == xMax:
+#    infinite.add( key )
+#  if n[1] == yMin or n[1] == yMax:
+#    infinite.add( key )
 
-          if abs(dx) + abs(dy) != delta:
-            continue
-
-          value = grid[curX, curY]
-          if value < 0:
-            found += 1
-            found_value = value
-
-    if found == 1:
-      grid[x, y] = -found_value
-
-tally = dict()
+for y in range(yMin, yMax+1):
+  infinite.add( grid[(xMin,y)] )
+  infinite.add( grid[(xMax,y)] )
 for x in range(xMin, xMax+1):
-  for y in range(yMin, yMax+1):
-    value = abs(grid[x,y])
-    if value != 0 and -value not in infinite:
-      if value in tally:
-        tally[value] += 1
-      else:
-        tally[value] = 1
+  infinite.add( grid[(x,yMin)] )
+  infinite.add( grid[(x,yMax)] )
 
-print( grid )
-print
-print( tally )
+maxNode = (None, 0)
+values = sorted(grid.values())
+result = dict()
+for key in nodes:
+  if key in infinite:
+    continue
 
+  c = values.count(key)
+  result[key] = c
+  if c > maxNode[1]:
+    maxNode = (key, c)
 
+print( maxNode )
+#print( sorted( result.items(), key=lambda l:l[1] ) )

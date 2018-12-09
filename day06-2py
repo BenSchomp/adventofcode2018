@@ -1,0 +1,51 @@
+# day 6, part 2
+
+size = 0
+target = 10000
+file = open('day06-input.txt', 'r')
+
+nodes = dict()
+xMin = xMax = yMin = yMax = None
+i = 0
+for line in file:
+  i += 1
+  coord = line.strip()
+  (x, y) = coord.split(',')
+  x = int(x)
+  y = int(y)
+  p = ( x, y )
+  nodes[i] = p
+
+  if not xMin or x < xMin:
+    xMin = x
+  if not xMax or x > xMax:
+    xMax = x
+  if not yMin or y < yMin:
+    yMin = y
+  if not yMax or y > yMax:
+    yMax = y
+
+file.close()
+
+# try out all spaces 1 away first, then try all spaces 2 away
+# have to look at ALL the 2's though ... but as soon as you find a negative number, you're done
+# if you find more than 1, you can stop (its a 0)
+# if you find only 1, its positive the number
+
+grid = dict()
+for x in range(xMin, xMax+1):
+  for y in range(yMin, yMax+1):
+    done = False
+
+    total = 0
+    for key, n in nodes.items():
+      d = abs(x-n[0]) + abs(y-n[1])
+      total += d
+      if total >= target:
+        break
+
+    if total < target:
+      size += 1
+
+
+print( size )
