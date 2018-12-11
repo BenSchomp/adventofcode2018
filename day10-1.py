@@ -1,15 +1,15 @@
 # day 6, part 1
-#
+# track multiple points and their movement deltas across a 2d plane
+# stop when the bounding box is at a minimum and see if there are letters
 
-import re, numpy
-
-NUM_SECS = 3
-
-sky = None
-points = {}
 point = 0
-xRange = yRange = xMin = xMax = yMin = yMax = 0
+points = {}
+sky = set()
+global xRange, yRange, xMin, xMax, yMin, yMax
+
+# parse input
 with open( 'day10-input.txt' ) as fIn:
+  import re
   for line in fIn:
     point += 1
     pieces = re.findall(r'[-]?\d+', line)
@@ -17,16 +17,24 @@ with open( 'day10-input.txt' ) as fIn:
     delta = (int(pieces[2]), int(pieces[3]))
     points[point] = [startPos[0], startPos[1], delta]
 
-def updateSky( update=True ):
-  global points, xRange, yRange, xMin, xMax, yMin, yMax
+# do one time tick: update all point positions, and min, max, and ranges
+def update( updatePositions=True ):
+  global points, sky, xRange, yRange, xMin, xMax, yMin, yMax
 
   for v in points.values():
-    if update:
+    # update points according to their deltas
+    if updatePositions:
       v[0] += v[2][0]
       v[1] += v[2][1]
 
-  xRange = yRange = xMin = xMax = yMin = yMax = 0
+  sky.clear()
+  xMin = xMax = points[1][0]
+  yMin = yMax = points[1][1]
+
+  # set sky bits and update min, max, and ranges
   for v in points.values():
+    sky.add( (v[0], v[1] ) )
+
     if v[0] < xMin:
       xMin = v[0]
     if v[0] > xMax:
@@ -36,43 +44,41 @@ def updateSky( update=True ):
     if v[1] > yMax:
       yMax = v[1]
 
-    xRange = xMax - xMin + 1
-    yRange = yMax - yMin + 1
+  xRange = xMax - xMin
+  yRange = yMax - yMin
 
-def drawSky():
-  global points, xRange, yRange, xMin, yMin
+# display the sky grid
+def draw():
+  global points, sky, xRange, yRange, xMin, yMin
   print()
 
-  sky = numpy.zeros( (xRange,yRange) )
-  for k, v in points.items():
-    sky[v[0]-xMin, v[1]-yMin] = k 
-
-  for i in range(yRange):
+  for i in range(yRange+1):
     y = i + yMin
-    for j in range(xRange):
+    for j in range(xRange+1):
       x = j + xMin
-      if sky[x,y] > 0:
+      if (x, y) in sky:
         print( '#', end='' )
-      elif x == 0 and y == 0:
-       print( 'X', end='' )
       else:
         print( '.', end='' )
     print( flush=True )
 
 
-updateSky(False)
-#drawSky()
-#for t in range(NUM_SECS):
-t =0
-while t < 13000:
-  print( t, xMin, xMax, yMin, yMax, xRange, yRange )
-  updateSky()
-  if xRange < 250 and yRange < 250:
-    drawSky()
+# seed everything w starting positions
+t = 0
+update(False)
+
+min_yRange = yRange
+while True:
+  if yRange < 200:
+    draw()
+    print( 't = %d' % t )
+  
+  update()
   t += 1
 
-print( t, xMin, xMax, yMin, yMax, xRange, yRange )
-drawSky()
-
-
+  if yRange < min_yRange:
+    min_yRange = yRange
+  else:
+    # this is not a guaranteed stop condition, but it works for the given input
+    exit()
 
